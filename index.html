@@ -26,7 +26,6 @@
             background-color: #eff6ff;
         }
         
-        /* Removed max-height and overflow-y to show all files without scrolling */
         .file-list {
             overflow: visible;
         }
@@ -73,7 +72,7 @@
                 PDF Master Tool
             </h1>
             <div class="flex flex-col items-center gap-2">
-                <p class="text-slate-500 text-sm">Secure, local processing with ✨ AI Smart Features.</p>
+                <p class="text-slate-500 text-sm">Secure, Local processing, Easy to use </p>
                 <div class="creator-badge text-xs">
                     <i data-lucide="user" class="w-3.5 h-3.5"></i>
                     Created by Vishal Kumar
@@ -106,10 +105,13 @@
                 </div>
             </div>
 
-            <!-- Toolbar with AI Feature -->
+            <!-- Toolbar with Sort and AI Features -->
             <div id="merge-toolbar" class="hidden px-6 py-3 bg-slate-50 border-y border-slate-200 flex flex-wrap gap-2 justify-between items-center">
                 <div class="flex items-center gap-2">
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sort:</span>
+                    <button onclick="sortFiles('num')" class="px-2.5 py-1.5 bg-white border border-slate-200 rounded text-xs hover:bg-slate-50 text-slate-600 flex items-center gap-1 shadow-sm font-bold">
+                        <i data-lucide="list-ordered" class="w-3.5 h-3.5"></i> 1 2 3
+                    </button>
                     <button onclick="sortFiles('asc')" class="px-2.5 py-1.5 bg-white border border-slate-200 rounded text-xs hover:bg-slate-50 text-slate-600 flex items-center gap-1 shadow-sm">
                         <i data-lucide="arrow-down-a-z" class="w-3.5 h-3.5"></i> A-Z
                     </button>
@@ -117,7 +119,7 @@
                         <i data-lucide="arrow-up-a-z" class="w-3.5 h-3.5"></i> Z-A
                     </button>
                     <button id="ai-rename-btn" onclick="suggestMergedName()" class="px-2.5 py-1.5 bg-blue-50 border border-blue-200 rounded text-xs hover:bg-blue-100 text-blue-700 flex items-center gap-1 ml-2 shadow-sm transition-all">
-                        <i data-lucide="sparkles" class="w-3.5 h-3.5 sparkle-icon"></i> ✨ AI Name Suggestion
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 sparkle-icon"></i> ✨ AI Rename
                     </button>
                 </div>
                 <button onclick="clearMergeFiles()" class="text-xs text-red-400 hover:text-red-600 font-medium">Clear All</button>
@@ -204,7 +206,6 @@
         const apiKey = ""; 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'pdf-master-suite';
 
-        // --- GEMINI API HELPERS ---
         async function callGemini(prompt, systemPrompt = "You are a helpful PDF assistant.") {
             try {
                 let retries = 0;
@@ -218,12 +219,10 @@
                             systemInstruction: { parts: [{ text: systemPrompt }] }
                         })
                     });
-
                     if (response.ok) {
                         const data = await response.json();
                         return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response generated.";
                     }
-
                     const delay = Math.pow(2, retries) * 1000;
                     await new Promise(resolve => setTimeout(resolve, delay));
                     retries++;
@@ -235,7 +234,6 @@
             }
         }
 
-        // --- INITIALIZATION ---
         lucide.createIcons();
         document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -257,7 +255,6 @@
             tabs[tabName].classList.remove('text-slate-500');
         }
 
-        // --- MERGE LOGIC ---
         const dropZoneMerge = document.getElementById('drop-zone-merge');
         const fileInputMerge = document.getElementById('file-input-merge');
         const fileListMerge = document.getElementById('file-list-merge');
@@ -279,12 +276,18 @@
         function clearMergeFiles() { mergeFiles = []; renderMergeList(); customFilenameInput.value = ''; }
         function removeMergeFile(index) { mergeFiles.splice(index, 1); renderMergeList(); }
         
-        function sortFiles(order) {
-            mergeFiles.sort((a, b) => {
-                const nameA = a.name.toLowerCase();
-                const nameB = b.name.toLowerCase();
-                return order === 'asc' ? (nameA < nameB ? -1 : 1) : (nameA > nameB ? -1 : 1);
-            });
+        function sortFiles(type) {
+            if (type === 'num') {
+                // Natural sort handles strings like "1.pdf", "2.pdf", "10.pdf" correctly
+                const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+                mergeFiles.sort((a, b) => collator.compare(a.name, b.name));
+            } else {
+                mergeFiles.sort((a, b) => {
+                    const nameA = a.name.toLowerCase();
+                    const nameB = b.name.toLowerCase();
+                    return type === 'asc' ? (nameA < nameB ? -1 : 1) : (nameA > nameB ? -1 : 1);
+                });
+            }
             renderMergeList();
         }
 
@@ -294,15 +297,10 @@
             const originalHtml = btn.innerHTML;
             btn.innerHTML = '✨ Thinking...';
             btn.disabled = true;
-
             const filenames = mergeFiles.map(f => f.name).join(', ');
             const prompt = `Based on these PDF filenames, suggest ONE short, professional filename (max 5 words, slugified with underscores) that represents the collection: ${filenames}. Return only the filename without the .pdf extension.`;
-            
             const suggestion = await callGemini(prompt, "You are a professional file organizer.");
-            if (suggestion) {
-                customFilenameInput.value = suggestion.trim().replace(/\.[^/.]+$/, "").replace(/\s+/g, '_');
-            }
-            
+            if (suggestion) customFilenameInput.value = suggestion.trim().replace(/\.[^/.]+$/, "").replace(/\s+/g, '_');
             btn.innerHTML = originalHtml;
             btn.disabled = false;
         }
@@ -380,7 +378,6 @@
             finally { setLoading('merge', false); }
         }
 
-        // --- SPLIT LOGIC ---
         const dropZoneSplit = document.getElementById('drop-zone-split');
         const fileInputSplit = document.getElementById('file-input-split');
         const splitBtn = document.getElementById('split-btn');
@@ -418,13 +415,11 @@
             btn.innerHTML = '✨ Summarizing...';
             summaryContent.classList.remove('hidden');
             summaryContent.textContent = "Analyzing document content...";
-
             try {
                 const { PDFDocument } = PDFLib;
                 const arrayBuffer = await splitFile.arrayBuffer();
                 const sourcePdf = await PDFDocument.load(arrayBuffer);
                 const pageCount = sourcePdf.getPageCount();
-                
                 const prompt = `I have a PDF titled "${splitFile.name}" with ${pageCount} pages. Give me a 2-sentence summary of what this document likely contains based on the metadata and filename. Keep it helpful.`;
                 const summary = await callGemini(prompt, "You are a concise document analyst.");
                 summaryContent.textContent = summary || "Could not generate summary.";
@@ -461,7 +456,6 @@
             finally { setLoading('split', false); }
         }
 
-        // --- UTILS ---
         function setupDragVisuals(el) {
             ['dragenter', 'dragover'].forEach(evt => el.addEventListener(evt, (e) => { e.preventDefault(); el.classList.add('drag-active'); }));
             ['dragleave', 'drop'].forEach(evt => el.addEventListener(evt, (e) => { e.preventDefault(); el.classList.remove('drag-active'); }));
