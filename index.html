@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Tool Suite: Merge, Split & Organize</title>
+    <title>PDF Tool Suite | Created by Vishal Kumar</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,10 +25,11 @@
             border-color: #3b82f6;
             background-color: #eff6ff;
         }
-        .file-list::-webkit-scrollbar { width: 6px; }
-        .file-list::-webkit-scrollbar-track { background: #f1f1f1; }
-        .file-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .file-list::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Removed max-height and overflow-y to show all files without scrolling */
+        .file-list {
+            overflow: visible;
+        }
         
         .dragging {
             opacity: 0.5;
@@ -48,132 +49,159 @@
         .sparkle-icon {
             animation: sparkle 2s infinite;
         }
+
+        .creator-badge {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 0.2rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans text-slate-800">
+<body class="bg-slate-50 min-h-screen font-sans text-slate-800 pb-12">
 
     <div class="max-w-4xl mx-auto px-4 py-8">
         
         <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-slate-900 mb-2 flex items-center justify-center gap-3">
-                <i data-lucide="layers" class="w-10 h-10 text-blue-600"></i>
+        <header class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-slate-900 mb-2 flex items-center justify-center gap-3">
+                <i data-lucide="layers" class="w-8 h-8 text-blue-600"></i>
                 PDF Master Tool
             </h1>
-            <p class="text-slate-500">Secure, local processing with ✨ AI Smart Features.</p>
-        </div>
+            <div class="flex flex-col items-center gap-2">
+                <p class="text-slate-500 text-sm">Secure, local processing with ✨ AI Smart Features.</p>
+                <div class="creator-badge text-xs">
+                    <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                    Created by Vishal Kumar
+                </div>
+            </div>
+        </header>
 
         <!-- Navigation Tabs -->
-        <div class="flex justify-center mb-6 border-b border-slate-200">
-            <button onclick="switchTab('merge')" id="tab-merge" class="tab-btn active px-8 py-3 font-semibold text-slate-500 border-b-2 border-transparent hover:text-blue-500 transition-all flex items-center gap-2">
-                <i data-lucide="combine" class="w-4 h-4"></i> Merge & Organize
+        <nav class="flex justify-center mb-6 border-b border-slate-200">
+            <button onclick="switchTab('merge')" id="tab-merge" class="tab-btn active px-6 py-2.5 font-semibold text-slate-500 border-b-2 border-transparent hover:text-blue-500 transition-all flex items-center gap-2">
+                <i data-lucide="combine" class="w-4 h-4"></i> Merge
             </button>
-            <button onclick="switchTab('split')" id="tab-split" class="tab-btn px-8 py-3 font-semibold text-slate-500 border-b-2 border-transparent hover:text-blue-500 transition-all flex items-center gap-2">
-                <i data-lucide="scissors" class="w-4 h-4"></i> Split PDF
+            <button onclick="switchTab('split')" id="tab-split" class="tab-btn px-6 py-2.5 font-semibold text-slate-500 border-b-2 border-transparent hover:text-blue-500 transition-all flex items-center gap-2">
+                <i data-lucide="scissors" class="w-4 h-4"></i> Split
             </button>
-        </div>
+        </nav>
 
         <!-- MERGE SECTION -->
-        <div id="view-merge" class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
-            <div class="p-8">
-                <div id="drop-zone-merge" class="border-3 border-dashed border-slate-300 rounded-xl p-10 text-center transition-all duration-200 hover:border-blue-400 hover:bg-slate-50 cursor-pointer group relative">
+        <section id="view-merge" class="bg-white rounded-2xl shadow-xl border border-slate-200 mb-6">
+            <div class="p-6">
+                <div id="drop-zone-merge" class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center transition-all duration-200 hover:border-blue-400 hover:bg-slate-50 cursor-pointer group relative">
                     <input type="file" id="file-input-merge" multiple accept=".pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                     <div class="pointer-events-none">
-                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                            <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                            <i data-lucide="upload-cloud" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-slate-700">Drop PDF files here to Merge</h3>
-                        <p class="text-slate-500 text-sm mt-1">or click to browse</p>
+                        <h3 class="text-md font-semibold text-slate-700">Drop PDF files here</h3>
+                        <p class="text-slate-400 text-xs mt-1">or click to browse</p>
                     </div>
                 </div>
             </div>
 
-            <div id="merge-toolbar" class="hidden px-6 py-2 bg-slate-50 border-y border-slate-200 flex flex-wrap gap-2 justify-between items-center">
+            <!-- Toolbar with AI Feature -->
+            <div id="merge-toolbar" class="hidden px-6 py-3 bg-slate-50 border-y border-slate-200 flex flex-wrap gap-2 justify-between items-center">
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Sort:</span>
-                    <button onclick="sortFiles('asc')" class="px-3 py-1.5 bg-white border border-slate-300 rounded text-sm hover:bg-slate-50 text-slate-700 flex items-center gap-1">
-                        <i data-lucide="arrow-down-a-z" class="w-4 h-4"></i> A-Z
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sort:</span>
+                    <button onclick="sortFiles('asc')" class="px-2.5 py-1.5 bg-white border border-slate-200 rounded text-xs hover:bg-slate-50 text-slate-600 flex items-center gap-1 shadow-sm">
+                        <i data-lucide="arrow-down-a-z" class="w-3.5 h-3.5"></i> A-Z
                     </button>
-                    <button onclick="sortFiles('desc')" class="px-3 py-1.5 bg-white border border-slate-300 rounded text-sm hover:bg-slate-50 text-slate-700 flex items-center gap-1">
-                        <i data-lucide="arrow-up-a-z" class="w-4 h-4"></i> Z-A
+                    <button onclick="sortFiles('desc')" class="px-2.5 py-1.5 bg-white border border-slate-200 rounded text-xs hover:bg-slate-50 text-slate-600 flex items-center gap-1 shadow-sm">
+                        <i data-lucide="arrow-up-a-z" class="w-3.5 h-3.5"></i> Z-A
                     </button>
-                    <button id="ai-rename-btn" onclick="suggestMergedName()" class="px-3 py-1.5 bg-blue-50 border border-blue-200 rounded text-sm hover:bg-blue-100 text-blue-700 flex items-center gap-1 ml-2 transition-all">
-                        <i data-lucide="sparkles" class="w-4 h-4 sparkle-icon"></i> ✨ AI Name Suggestion
+                    <button id="ai-rename-btn" onclick="suggestMergedName()" class="px-2.5 py-1.5 bg-blue-50 border border-blue-200 rounded text-xs hover:bg-blue-100 text-blue-700 flex items-center gap-1 ml-2 shadow-sm transition-all">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 sparkle-icon"></i> ✨ AI Name Suggestion
                     </button>
                 </div>
-                <button onclick="clearMergeFiles()" class="text-xs text-red-500 hover:text-red-700 font-medium hover:underline">Clear All</button>
+                <button onclick="clearMergeFiles()" class="text-xs text-red-400 hover:text-red-600 font-medium">Clear All</button>
             </div>
 
-            <ul id="file-list-merge" class="file-list hidden max-h-96 overflow-y-auto p-4 space-y-2 bg-slate-50/50"></ul>
+            <!-- Full File List (No scrolling) -->
+            <ul id="file-list-merge" class="file-list hidden p-4 space-y-2 bg-slate-50/50"></ul>
 
-            <div class="p-6 bg-white border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div id="status-msg-merge" class="text-sm text-slate-500 hidden flex items-center gap-2">
-                    <div class="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
-                    Processing...
-                </div>
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <input type="text" id="custom-filename" placeholder="Output filename" class="px-3 py-3 border border-slate-300 rounded-lg text-sm w-full sm:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <button id="merge-btn" onclick="mergePDFs()" disabled class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-md transition-all flex items-center justify-center gap-2 whitespace-nowrap">
-                        <i data-lucide="merge" class="w-5 h-5"></i> Merge PDFs
-                    </button>
+            <!-- Merge Controls -->
+            <div class="p-6 bg-white border-t border-slate-200">
+                <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                    <div id="status-msg-merge" class="text-xs text-slate-500 hidden flex items-center gap-2">
+                        <div class="animate-spin rounded-full h-3.5 w-3.5 border-2 border-blue-600 border-t-transparent"></div>
+                        Working...
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <input type="text" id="custom-filename" placeholder="Output filename" class="px-3 py-2.5 border border-slate-300 rounded-lg text-sm w-full sm:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <button id="merge-btn" onclick="mergePDFs()" disabled class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-md transition-all flex items-center justify-center gap-2 whitespace-nowrap text-sm">
+                            <i data-lucide="merge" class="w-4 h-4"></i> Merge PDFs
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- SPLIT SECTION -->
-        <div id="view-split" class="hidden bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+        <section id="view-split" class="hidden bg-white rounded-2xl shadow-xl border border-slate-200 mb-6">
             <div class="p-8">
-                <div id="drop-zone-split" class="border-3 border-dashed border-slate-300 rounded-xl p-10 text-center transition-all duration-200 hover:border-purple-400 hover:bg-slate-50 cursor-pointer group relative">
+                <div id="drop-zone-split" class="border-2 border-dashed border-slate-300 rounded-xl p-10 text-center transition-all duration-200 hover:border-purple-400 hover:bg-slate-50 cursor-pointer group relative">
                     <input type="file" id="file-input-split" accept=".pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                     <div class="pointer-events-none">
-                        <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                            <i data-lucide="file-minus" class="w-8 h-8"></i>
+                        <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                            <i data-lucide="file-minus" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-slate-700">Drop 1 PDF to Split</h3>
-                        <p class="text-slate-500 text-sm mt-1">Extracts all pages into a ZIP</p>
+                        <h3 class="text-md font-semibold text-slate-700">Drop 1 PDF to Split</h3>
+                        <p class="text-slate-400 text-xs mt-1">Extracts all pages into a ZIP</p>
                     </div>
                 </div>
                 
-                <div id="split-file-info" class="hidden mt-6 p-4 bg-purple-50 border border-purple-100 rounded-lg space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="file-text" class="text-purple-500"></i>
-                            <span id="split-filename" class="font-medium text-slate-700">filename.pdf</span>
+                <div id="split-file-info" class="hidden mt-4 p-4 bg-purple-50 border border-purple-100 rounded-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <i data-lucide="file-text" class="text-purple-500 shrink-0"></i>
+                            <span id="split-filename" class="font-medium text-slate-700 truncate text-sm">filename.pdf</span>
                         </div>
                         <button onclick="clearSplitFile()" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
                     </div>
                     
                     <div class="pt-4 border-t border-purple-200">
-                        <button onclick="summarizePdf()" id="ai-summary-btn" class="flex items-center gap-2 text-sm font-semibold text-purple-700 bg-purple-100 px-4 py-2 rounded-lg hover:bg-purple-200 transition-all">
-                            <i data-lucide="sparkles" class="w-4 h-4 sparkle-icon"></i> ✨ AI Generate Summary
+                        <button onclick="summarizePdf()" id="ai-summary-btn" class="flex items-center gap-2 text-xs font-semibold text-purple-700 bg-purple-100 px-3 py-2 rounded-lg hover:bg-purple-200 transition-all">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5 sparkle-icon"></i> ✨ AI Generate Summary
                         </button>
-                        <div id="summary-content" class="hidden mt-3 p-3 bg-white rounded-lg border border-purple-100 text-sm text-slate-600 italic">
-                            <!-- AI summary goes here -->
+                        <div id="summary-content" class="hidden mt-3 p-3 bg-white rounded-lg border border-purple-100 text-xs text-slate-600 italic leading-relaxed">
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="p-6 bg-white border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div id="status-msg-split" class="text-sm text-slate-500 hidden flex items-center gap-2">
-                    <div class="animate-spin rounded-full h-4 w-4 border-2 border-purple-600 border-t-transparent"></div>
+                <div id="status-msg-split" class="text-xs text-slate-500 hidden flex items-center gap-2">
+                    <div class="animate-spin rounded-full h-3.5 w-3.5 border-2 border-purple-600 border-t-transparent"></div>
                     Processing...
                 </div>
-                <button id="split-btn" onclick="splitPDF()" disabled class="w-full sm:w-auto px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium shadow-md transition-all flex items-center justify-center gap-2 ml-auto">
-                    <i data-lucide="package" class="w-5 h-5"></i> Split & Download ZIP
+                <button id="split-btn" onclick="splitPDF()" disabled class="w-full sm:w-auto px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium shadow-md transition-all flex items-center justify-center gap-2 ml-auto text-sm">
+                    <i data-lucide="package" class="w-4 h-4"></i> Split & Download ZIP
                 </button>
             </div>
-        </div>
+        </section>
 
-        <p class="text-center text-slate-400 text-sm mt-8">
-            &copy; <span id="year"></span> PDF Master. Powered by ✨ Gemini.
-        </p>
+        <!-- Global Footer -->
+        <footer class="mt-8 py-6 text-center border-t border-slate-200">
+            <p class="text-slate-500 text-sm flex items-center justify-center gap-1 font-medium">
+                Made with <i data-lucide="heart" class="w-3.5 h-3.5 text-red-500 fill-current"></i> by <span class="text-slate-900 font-bold">Vishal Kumar</span>
+            </p>
+            <p class="text-slate-400 text-[10px] mt-1 uppercase tracking-widest">
+                &copy; <span id="year"></span> PDF Master Tool
+            </p>
+        </footer>
     </div>
 
     <a id="download-link" class="hidden"></a>
 
     <script>
-        const apiKey = ""; // Set by environment
+        const apiKey = ""; 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'pdf-master-suite';
 
         // --- GEMINI API HELPERS ---
@@ -250,6 +278,7 @@
 
         function clearMergeFiles() { mergeFiles = []; renderMergeList(); customFilenameInput.value = ''; }
         function removeMergeFile(index) { mergeFiles.splice(index, 1); renderMergeList(); }
+        
         function sortFiles(order) {
             mergeFiles.sort((a, b) => {
                 const nameA = a.name.toLowerCase();
@@ -263,7 +292,7 @@
             if (mergeFiles.length < 1) return;
             const btn = document.getElementById('ai-rename-btn');
             const originalHtml = btn.innerHTML;
-            btn.innerHTML = 'Thinking...';
+            btn.innerHTML = '✨ Thinking...';
             btn.disabled = true;
 
             const filenames = mergeFiles.map(f => f.name).join(', ');
@@ -282,12 +311,12 @@
             fileListMerge.innerHTML = '';
             if (mergeFiles.length > 0) {
                 fileListMerge.classList.remove('hidden');
-                mergeToolbar.classList.remove('hidden', 'flex');
+                mergeToolbar.classList.remove('hidden');
                 mergeToolbar.classList.add('flex');
                 mergeBtn.disabled = false;
             } else {
                 fileListMerge.classList.add('hidden');
-                mergeToolbar.classList.add('hidden', 'flex');
+                mergeToolbar.classList.add('hidden');
                 mergeBtn.disabled = true;
             }
 
@@ -298,13 +327,13 @@
                 li.className = 'bg-white border border-slate-200 rounded-lg p-3 flex items-center justify-between shadow-sm cursor-move hover:border-blue-300 transition-colors';
                 li.innerHTML = `
                     <div class="flex items-center gap-3 overflow-hidden pointer-events-none">
-                        <div class="w-6 h-6 text-slate-400"><i data-lucide="grip-vertical"></i></div>
+                        <div class="w-5 h-5 text-slate-300"><i data-lucide="grip-vertical" class="w-4 h-4"></i></div>
                         <div class="min-w-0">
-                            <p class="text-sm font-medium text-slate-700 truncate">${file.name}</p>
-                            <p class="text-xs text-slate-400">${formatSize(file.size)}</p>
+                            <p class="text-xs font-semibold text-slate-700 truncate">${file.name}</p>
+                            <p class="text-[10px] text-slate-400">${formatSize(file.size)}</p>
                         </div>
                     </div>
-                    <button onclick="removeMergeFile(${index})" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <button onclick="removeMergeFile(${index})" class="p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                 `;
                 addDragEventsToList(li);
                 fileListMerge.appendChild(li);
@@ -388,7 +417,7 @@
             btn.disabled = true;
             btn.innerHTML = '✨ Summarizing...';
             summaryContent.classList.remove('hidden');
-            summaryContent.textContent = "Analyzing document structure and content...";
+            summaryContent.textContent = "Analyzing document content...";
 
             try {
                 const { PDFDocument } = PDFLib;
@@ -403,7 +432,7 @@
                 summaryContent.textContent = "Error reading PDF for summary.";
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4 sparkle-icon"></i> ✨ AI Generate Summary';
+                btn.innerHTML = '<i data-lucide="sparkles" class="w-3.5 h-3.5 sparkle-icon"></i> ✨ AI Generate Summary';
                 lucide.createIcons();
             }
         }
@@ -457,7 +486,7 @@
             else {
                 btn.disabled = false;
                 const icon = type === 'merge' ? 'merge' : 'package';
-                btn.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i> ${originalText}`;
+                btn.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4"></i> ${originalText}`;
                 msg.classList.add('hidden');
                 lucide.createIcons();
             }
