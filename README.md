@@ -1,5 +1,4 @@
-Pef Merger
-PDF Master Tool ✨
+Pef Merger ✨
 
 A professional, high-performance web application for merging and splitting PDF documents. This tool is built with a "Privacy First" approach, ensuring all document processing happens locally in the browser.
 
